@@ -7,6 +7,7 @@ Pour les annonces,
     	"parameters" : [
 		{ 
         		"type" : /* information, warning, ou autre */,
+			"title": "Titre de l'annonce",
 			"content" : "Contenu de l'annonce"
     		}
 	]
@@ -19,6 +20,7 @@ Pour les annonces,
     	"parameters": [
 		{
         		"type" : /* information, warning, ou autre */,
+			"title": "Titre de l'annonce",
 			"content" : "Contenu de l'annonce"
     		}
 	]
