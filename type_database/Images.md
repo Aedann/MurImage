@@ -3,8 +3,11 @@ Pour les images,
 ```json
 {
     "Id_screen" : /*integer*/,
-	"type" : "Images",
-    "parameters" : {AJOUTER ICI}
+	"type" : "image",
+    "parameters" : { 
+		"source" : /* "remote" ou "local"*/ ,
+		"location" : "url ou path"
+    }
 
 }
 ```
@@ -12,8 +15,14 @@ Pour les images,
 ```json
 {
     "Id_screen" : /*integer*/,
-	"type" : "Images",
-    "parameters" : {AJOUTER ICI}
+	"type" : "image",
+    "parameters" : {
+		"start_coordinates" : {"x" : 0, "y" : 0},
+		"end_coordinates" : {"x" : 0, "y" : 0},
+		"cut" : true,
+		"image_stream" : /*binary*/,
+		'image_type" : "jpg"
+    }	
 
 }
 ```
