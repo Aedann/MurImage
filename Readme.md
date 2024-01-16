@@ -25,4 +25,4 @@ Types différents :
 Parametres pour chaque type : 
 (A Compléter pour chaque type)
 
- * [Meteo] (type_databse/Meteo.md)
+ * [Meteo] (https://raw.githubusercontent.com/MathisVermeren/MurImage/main/type_database/Meteo.md)
