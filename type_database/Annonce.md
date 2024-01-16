@@ -3,7 +3,7 @@ Pour les annonces,
 ```json
 {
     	"screen_id" : /* integer */,
-	"type" : "annonce",
+	"type" : "announcement",
     	"parameters" : [
 		{ 
         		"type" : /* information, warning, ou autre */,
@@ -15,7 +15,7 @@ Pour les annonces,
 # Du Server au Client : 
 ```json
 {
-	"type": "annonce",
+	"type": "announcement",
     	"parameters": [
 		{
         		"type" : /* information, warning, ou autre */,
