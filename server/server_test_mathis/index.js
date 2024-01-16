@@ -1,4 +1,4 @@
-const githubRepoUrl = 'https://raw.githubusercontent.com/MathisVermeren/MurImage/main/content.json';
+const githubRepoUrl = 'https://raw.githubusercontent.com/MathisVermeren/MurImage/main/data/content.json';
 
 async function fetchJsonFile() {
   try {

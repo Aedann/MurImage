@@ -1,3 +1,4 @@
+Le 
 Le json suit cette structure : 
 ```json
 {
@@ -22,12 +23,6 @@ Types différents :
 
 
 Parametres pour chaque type : 
-Meteo : 
-```json
-{
-	"temperature" : /* integer */,
-	"Lieu" : /* String */,
-	...
-}	
-```
-A Compléter pour chaque type
+(A Compléter pour chaque type)
+
+ * [Meteo] (./type_databse/Meteo.md)
