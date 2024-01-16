@@ -1,3 +1,13 @@
-{
-	"test" : "exemple123",
-}
+[
+	{
+		"Id_screen" : 1,
+		"type" : "Image",
+		"parametres" : { "url" : "https://media.istockphoto.com/id/513133900/fr/photo/or-chien-darr%C3%AAt-assis-dans-un-fond-blanc-%C3%A0-lavant-de.jpg?s=612x612&w=0&k=20&c=3X1iqRKuCwS8mZfurPSA0P9L43wdvJl80eTE0RlaLfU=" }
+	},  
+	{
+		"Id_screen" : 2,
+		"type" : "meteo",
+		"parametres" : { "temperature" : 23.4 }
+	}
+
+]
