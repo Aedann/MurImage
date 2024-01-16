@@ -1,13 +1,29 @@
 [
 	{
-		"Id_screen" : 1,
-		"type" : "Image",
-		"parametres" : { "url" : "https://media.istockphoto.com/id/513133900/fr/photo/or-chien-darr%C3%AAt-assis-dans-un-fond-blanc-%C3%A0-lavant-de.jpg?s=612x612&w=0&k=20&c=3X1iqRKuCwS8mZfurPSA0P9L43wdvJl80eTE0RlaLfU=" }
-	},  
+		"screen_id" : 1,
+		"type" : "image",
+	    	"parameters" : {
+			"cut": false,
+			"source": "remote",
+			"location": "https://upload.wikimedia.org/wikipedia/commons/5/53/Logo_Polytech_Sorbonne.png"
+		}
+	},
 	{
-		"Id_screen" : 2,
-		"type" : "meteo",
-		"parametres" : { "temperature" : 23.4 }
+		"screen_id": 2,
+		"type": "datetime"
+	},
+	{
+	    	"screen_id": 3,
+		"type": "weather",
+	},
+	{
+	    	"screen_id" : 4,
+		"type" : "announcement",
+	    	"parameters" : [
+			{ 
+	        		"type" : "information",
+				"content" : "Bienvenu(e) à Polytech Sorbonne!"
+	    		}
+		]
 	}
-
 ]
