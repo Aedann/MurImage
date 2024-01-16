@@ -21,7 +21,7 @@ Pour les images,
 		"end_coordinates" : {"x" : 0, "y" : 0},
 		"cut" : true,
 		"image_stream" : /*binary*/,
-		'image_type" : "jpg"
+		"image_type" : "jpg"
     }	
 
 }
