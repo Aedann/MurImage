@@ -14,7 +14,7 @@
 	},
 	{
 	    	"screen_id": 3,
-		"type": "weather",
+		"type": "weather"
 	},
 	{
 	    	"screen_id" : 4,
