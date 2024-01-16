@@ -3,7 +3,7 @@ Pour les RATP,
 ```json
 {
     "Id_screen" : /*integer*/,
-	"type" : "RATP",
+	"type" : "transport",
     "parameters" : {AJOUTER ICI}
 
 }
@@ -12,7 +12,7 @@ Pour les RATP,
 ```json
 {
     "Id_screen" : /*integer*/,
-	"type" : "RATP",
+	"type" : "transport",
     "parameters" : {AJOUTER ICI}
 
 }
