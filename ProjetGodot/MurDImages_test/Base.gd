@@ -6,10 +6,7 @@ export var websocket_url = "mur-images.khawand.dev:8080"
 # Our WebSocketClient instance
 var _client = WebSocketClient.new()
 
-onready var WEBM = get_node("WEBM")
-
 onready var globalImage = Image.new()
-onready var globalTexture = ImageTexture.new()
 
 func _ready():
 	# Connect base signals to get notified of connection open, close, and errors.
@@ -23,11 +20,6 @@ func _ready():
 	if err != OK:
 		print("Unable to connect")
 		set_process(false)
-#
-#	var WEBMStream = VideoStreamWebm.new()
-#	WEBMStream.set_file("res://video/fnaf_jump_scare_dog.webm")
-#	WEBM.stream = WEBMStream
-#	WEBM.play()
 	
 func _closed(was_clean = false):
 	# was_clean will tell you if the disconnection was correctly notified
@@ -89,10 +81,8 @@ func _on_data():
 					return
 #			var startCoords = Vector2(params["start_coordinates"].x,params["start_coordinates"].y)
 #			var stopCoords = Vector2(params["stop_coordinates"].x,params["stop_coordinates"].y)
-			var cut = bool(params.cut)
-#			$ImageDisplay.display(cut,startCoords,stopCoords)
-			globalTexture.create_from_image(globalImage)
-			$TestImage.texture = globalTexture
+#			var cut = bool(params.cut)
+			$ImageDisplay.display(globalImage,true,Vector2(0,0),Vector2(100,100))
 
 		"transport":
 			pass
@@ -105,6 +95,9 @@ func _on_data():
 			$WeatherDisplay.display(params.temperature, params.temperature_max, params.temperature_min, "Paris", params.humidity)
 		
 		"3D":
+			pass
+			
+		"pokemon":
 			pass
 			
 		_:
