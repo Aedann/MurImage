@@ -41,8 +41,8 @@
   color: #888;
 }
 
-.screens{
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+.screens {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px; /* Vous pouvez ajuster cet espacement selon vos préférences */
 }
