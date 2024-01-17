@@ -8,7 +8,7 @@ Pour les images,
 		"start_coordinates": {"x" : 0, "y" : 0},
 		"end_coordinates": {"x" : 0, "y" : 0},
 		"cut": /* true si sur plusieurs écrans, false sinon */,
-		"location": "./nomDeLImage"
+		"image_name": "nom de l'image"
 	}
 }
 ```
