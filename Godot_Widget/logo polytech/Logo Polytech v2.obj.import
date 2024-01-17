@@ -1,0 +1,20 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/Logo Polytech v2.obj-511af14f361f9a7d1cc8f4edc2d00abc.mesh"
+
+[deps]
+
+files=[ "res://.import/Logo Polytech v2.obj-511af14f361f9a7d1cc8f4edc2d00abc.mesh" ]
+
+source_file="res://Logo Polytech v2.obj"
+dest_files=[ "res://.import/Logo Polytech v2.obj-511af14f361f9a7d1cc8f4edc2d00abc.mesh", "res://.import/Logo Polytech v2.obj-511af14f361f9a7d1cc8f4edc2d00abc.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+octahedral_compression=true
+optimize_mesh_flags=4286
