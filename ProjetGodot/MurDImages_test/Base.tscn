@@ -1,0 +1,85 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://Base.gd" type="Script" id=1]
+[ext_resource path="res://Shwumatik.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://Weather/WeatherReport.gd" type="Script" id=3]
+[ext_resource path="res://ConsoleLabel.gd" type="Script" id=5]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Sprite
+
+
+func display(image : Image, cut : bool, startCoords : Vector2, stopCoords : Vector2):
+	pass
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+#func _process(delta):
+#	pass
+"
+
+[sub_resource type="DynamicFont" id=2]
+
+[sub_resource type="Theme" id=4]
+default_font = SubResource( 2 )
+
+[sub_resource type="DynamicFont" id=3]
+size = 30
+font_data = ExtResource( 2 )
+
+[node name="Base" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="TestImage" type="Sprite" parent="."]
+position = Vector2( 400, 200 )
+
+[node name="ConsoleLabel" type="Label" parent="."]
+margin_left = 353.0
+margin_top = 368.0
+margin_right = 393.0
+margin_bottom = 382.0
+script = ExtResource( 5 )
+
+[node name="WEBM" type="VideoPlayer" parent="."]
+margin_left = 199.0
+margin_top = 53.0
+margin_right = 764.0
+margin_bottom = 477.0
+
+[node name="ImageDisplay" type="Sprite" parent="."]
+position = Vector2( 400, 300 )
+script = SubResource( 1 )
+
+[node name="AnnonceBox" type="Node2D" parent="."]
+
+[node name="WeatherDisplay" type="Node2D" parent="."]
+script = ExtResource( 3 )
+
+[node name="Label" type="Label" parent="WeatherDisplay"]
+modulate = Color( 0.133333, 0.917647, 0.0666667, 1 )
+self_modulate = Color( 0.984314, 0.984314, 0.984314, 1 )
+margin_left = 400.0
+margin_top = 300.0
+margin_right = 480.0
+margin_bottom = 380.0
+theme = SubResource( 4 )
+custom_fonts/font = SubResource( 3 )
+
+[node name="HTTPRequest" type="HTTPRequest" parent="WeatherDisplay"]
+
+[node name="WeatherIcon" type="TextureRect" parent="WeatherDisplay"]
+margin_left = 340.0
+margin_top = 280.0
+margin_right = 380.0
+margin_bottom = 320.0
+
+[node name="Label2" type="Label" parent="WeatherDisplay"]
+margin_left = 400.0
+margin_top = 300.0
+margin_right = 440.0
+margin_bottom = 314.0
+
+[connection signal="request_completed" from="WeatherDisplay/HTTPRequest" to="WeatherDisplay" method="_on_HTTPRequest_request_completed"]
