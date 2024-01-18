@@ -35,3 +35,13 @@
     font-weight: bold;
   }
   
+
+.image-container {
+    margin-top: 10px; /* Ajustez la marge selon vos préférences */
+}
+
+.image-background {
+    width: 200px; /* Ajustez la largeur selon vos préférences */
+    height: 100px; /* Ajustez la hauteur selon vos préférences */
+    background-size: cover; /* Ajustez le comportement du redimensionnement de l'image */
+}
