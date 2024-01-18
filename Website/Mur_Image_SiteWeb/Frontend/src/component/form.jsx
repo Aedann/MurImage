@@ -4,12 +4,11 @@ import React, {useState, useEffect} from 'react';
 import DropZone from './DropZone';
 import PropTypes from 'prop-types';
 import "./screen.css";
-import { send } from 'vite';
 
 //Print "conflicting" if there are mutliple types of screens in selectedScreens
 
 
-const Form = ({sendingScreensData, setSendingScreensData,selectedScreen}) => {
+const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, screens, setScreens, selectedTimeLineParts}) => {
     const [file, setFile] = useState(null);
     const [formState, setFormState] = useState("singleScreen"); //Or Images or Conflicting
 
@@ -26,12 +25,19 @@ const Form = ({sendingScreensData, setSendingScreensData,selectedScreen}) => {
     const minY = Math.min(selectedScreens[0][1], selectedScreens[1][1]);
     const maxY = Math.max(selectedScreens[0][1], selectedScreens[1][1]);
 
-    for(let i = 0; i < 9; i++){
-        coord = idToCoordonate(i);
-        if(coord[0] >= minX && coord[0] <=  maxX && coord[1] >= minY && coord[1] <= maxY)
-            if(sendingscreensData.find(screen => screen.Id_screen === idToCoordonate(selectedScreen[0])).type !== sendingscreensData.find(screen => screen.Id_screen === selectedScreen).type)
+    useEffect(() => {
+        let i = 0
+        for(; i < 9; i++)
+        {
+            if(screens[i].isSelected)
+            {
+                //tu parcours les screens, et tu regarde si elles so
+                ;
+            }
+        }
+        for(;i < 9; i++)
 
-    }
+    }, [selectedScreens, selectedTimeLineParts, screens]);
 
 
     const handleChangeType = (event) => {

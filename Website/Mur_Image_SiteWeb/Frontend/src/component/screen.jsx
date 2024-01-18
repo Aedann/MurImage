@@ -5,11 +5,7 @@ import ReactCrop from 'react-image-crop'
 import PropTypes from 'prop-types';
 import "./screen.css";
 
-const Screen = ({Id_screen, selectedTimeLineParts, sendingScreensData, onSelect, selectedScreens}) => {
-
-    const [type, setType] = useState("");
-    const [parameters, setParameters] = useState({});
-    const [isSelected, setIsSelected] = useState(false);
+const Screen = ({Id_screen, selectedTimeLineParts, sendingScreensData, onSelect, selectedScreens, screens, setScreens}) => {
 
     //Si c'est une image
     const [crop, setCrop] = useState({
@@ -35,10 +31,10 @@ const Screen = ({Id_screen, selectedTimeLineParts, sendingScreensData, onSelect,
     useEffect(() => { //CORRIGER ICI LA LOGIQUE
         const coord = idToCoordonate(Id_screen);
         if(coord[0] >= minX && coord[0] <=  maxX && coord[1] >= minY && coord[1] <= maxY)
-            setIsSelected(true);
+            setScreens( screens => ({...screens, [Id_screen]: {...[Id_screen], isSelected: true }}));
         else
-            setIsSelected(false);
-    }, [selectedScreens]);
+            setScreens( screens => ({...screens, [Id_screen]: {...[Id_screen], isSelected: false }}));
+    }, [selectedScreens, screens]);
 
 
     const handleSelect = (e) => {
@@ -49,27 +45,27 @@ const Screen = ({Id_screen, selectedTimeLineParts, sendingScreensData, onSelect,
     const maxPart =  Math.max(selectedTimeLineParts[0], selectedTimeLineParts[1]);
 
     useEffect(() => {
-        setType(sendingScreensData[minPart][Id_screen].type);
-        setParameters(sendingScreensData[minPart][Id_screen].parameters);
+        setScreens( screens => ({...screens, [Id_screen]: {...[Id_screen], type: sendingScreensData[minPart][Id_screen].type }}));
+        setScreens( screens => ({...screens, [Id_screen]: {...[Id_screen], parameters: sendingScreensData[minPart][Id_screen].parameters }}));
 
         for(let i = minPart + 1; i < maxPart; i++)
         {   
-            if((type !== sendingScreensData[i][Id_screen].type) ||
-            (parameters !== sendingScreensData[i][Id_screen].parameters))
+            if((screens[Id_screen].type !== sendingScreensData[i][Id_screen].type) ||
+            (screens[Id_screen].parameters !== sendingScreensData[i][Id_screen].parameters))
             {
-                setType("conflicting");
+                setScreens( screens => ({...screens, [Id_screen]: {...[Id_screen], type: "conflicting" }}));
             }
                 
         }
 
-        if(type == "image" && parameters.cut)
+        if(screens[Id_screen].type == "image" && screens[Id_screen].parameters.cut)
         {
             setCrop({
                 unit: 'px', 
-                x: parameters.start_coordinates[0],
-                y: parameters.start_coordinates[1],
-                width: parameters.end_coordinates[0] - parameters.start_coordinates[0],
-                height: parameters.end_coordinates[1] - parameters.start_coordinates[1]
+                x: screens[Id_screen].parameters.start_coordinates[0],
+                y: screens[Id_screen].parameters.start_coordinates[1],
+                width: screens[Id_screen].parameters.end_coordinates[0] - screens[Id_screen].parameters.start_coordinates[0],
+                height: screens[Id_screen].parameters.end_coordinates[1] - screens[Id_screen].parameters.start_coordinates[1]
             })
         }
         else
@@ -82,21 +78,20 @@ const Screen = ({Id_screen, selectedTimeLineParts, sendingScreensData, onSelect,
                 height: 100
             })
         }
-    },[selectedTimeLineParts]);
+    },[selectedTimeLineParts, sendingScreensData]);
 
-
-
+    
     return (
-    <div className={`screen ${(isSelected && "isSelected")}`} onClick={(e) => handleSelect(e)}>
+    <div className={`screen ${(screens[Id_screen].isSelected && "isSelected")}`} onClick={(e) => handleSelect(e)}>
         <h2>Screen {Id_screen}</h2>
-        <p className="type-label">{type}</p>
+        <p className="type-label">{screens[Id_screen].type}</p>
 
-        {type === "image" && (
+        {screens[Id_screen].type === "image" && (
             <div className="image-container">
                 <ReactCrop crop={crop}>
                     <img
                         className="image-background"
-                        src={parameters.image_url}
+                        src={screens[Id_screen].parameters.image_url}
                         alt={`Screen ${Id_screen} Image`}
                     />
                 </ReactCrop>

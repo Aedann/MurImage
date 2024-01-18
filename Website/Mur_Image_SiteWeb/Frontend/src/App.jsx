@@ -10,6 +10,17 @@ function App() {
   const [selectedScreens, setSelectedScreens] = useState([[-1,-1],[-1,-1]]);
   const [fetchedScreensData, setFetchedScreensData] = useState([]);
   const [sendingScreensData, setSendingScreensData] = useState([]);
+  const [screens, setScreens] = useState([
+    {type:"",parameters:{},isSelected:false},
+    {type:"",parameters:{},isSelected:false},
+    {type:"",parameters:{},isSelected:false},
+    {type:"",parameters:{},isSelected:false},
+    {type:"",parameters:{},isSelected:false},
+    {type:"",parameters:{},isSelected:false},
+    {type:"",parameters:{},isSelected:false},
+    {type:"",parameters:{},isSelected:false},
+    {type:"",parameters:{},isSelected:false}
+  ]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -97,8 +108,8 @@ function App() {
       <h1>Mur d'image </h1>
       <div className="screens">
 
-      {rangeScreens.map((i) => (
-        <Screen key={i} Id_screen={i} selectedTimeLineParts={selectedTimeLineParts} sendingScreensData={sendingScreensData} onSelect={handleScreenSelect} selectedScreens={selectedScreens}/>
+      {rangeScreens.map((index) => (
+        <Screen key={index} Id_screen={index} selectedTimeLineParts={selectedTimeLineParts} sendingScreensData={sendingScreensData} onSelect={handleScreenSelect} selectedScreens={selectedScreens} screens={screens} setScreens={setScreens} />
       ))
       }
       </div>
@@ -120,7 +131,6 @@ function App() {
       </div>
       </div>
   }
-  <Dropzone/>
   </div>
   )
 }
