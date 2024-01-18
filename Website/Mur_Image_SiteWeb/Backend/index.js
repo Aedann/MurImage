@@ -4,8 +4,8 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
-const { ImgurClient } = require('imgur');
 const fileUpload = require('express-fileupload');
+const mime = require('mime-types');
 
 
 const app = express();
@@ -16,6 +16,7 @@ app.use(cors());
 app.use(fileUpload());
 app.use(bodyParser.json());
 
+const imgurAccessToken = 'b81882edbe7fb55404a1bf9f59d39ac18113e1f9';
 
 app.get('/content', (req, res) => {
   try {
@@ -46,19 +47,67 @@ app.post('/content', (req, res) => {
   }
 });
 
-app.post('/uploads', (req, res) => {
-  if (!req.files) {
-    return res.status(400).send({ msg: 'No file were uploaded' });
-  }
-  let sampleFile = req.files.sampleFile;  
-  let uploadPath = __dirname + '/uploads/' + sampleFile.name;
-  sampleFile.mv(uploadPath, function(err) { 
-    if (err) {
-      return res.status(500).send(err);
-    }
+// app.post('/uploads', (req, res) => {
+//   console.log("req.files", req.files);
+//   console.log("req.body", req.body);
+//   if (!req.files || Object.keys(req.files).length === 0) {
+//     return res.status(400).json({ msg: 'No file were uploaded' });
+//   }
 
-  });
+//   const sampleFile = req.files.file;
+//   const uploadPath = path.join(__dirname, 'data', sampleFile.name);
+
+//   sampleFile.mv(uploadPath, function(err) {
+//     if (err) {
+//       return res.status(500).json({ msg: err.message });
+//     }
+//     res.json({ msg: 'File uploaded successfully' });
+//   });
+// });
+
+
+app.post('/uploads', async (req, res) => {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).json({ msg: 'No file were uploaded' });
+  }
+
+  try {
+    const sampleFile = req.files.file;
+    const uploadPath = path.join(__dirname, 'data', sampleFile.name);
+
+    // Enregistrement de l'image sur le serveur Node.js
+    await sampleFile.mv(uploadPath);
+
+    try {
+      const imageData = fs.readFileSync(uploadPath);
+      const contentType = mime.lookup(uploadPath) || 'application/octet-stream';
+
+      const responseImgur = await axios.post('https://api.imgur.com/3/image', imageData, {
+        headers: {
+          'Authorization': `Bearer ${imgurAccessToken}`,
+          'Content-Type': contentType,
+          'Content-Length': imageData.length.toString(),
+        },
+      });
+
+      const imgurLink = responseImgur.data.data.link;
+
+      console.log('Réponse Imgur:', responseImgur);
+
+      // Suppression de l'image du serveur Node.js
+      fs.unlinkSync(uploadPath);
+
+      res.json({ msg: 'File uploaded successfully', imgurLink });
+    } catch (error) {
+      console.error('Erreur lors de l\'upload de l\'image sur Imgur:', error.message);
+      res.status(500).json({ msg: error.message });
+    }
+  } catch (error) {
+    console.error('Erreur lors du traitement de l\'image:', error);
+    res.status(500).json({ msg: error.message });
+  }
 });
+
 
 
 app.listen(port, () => {
