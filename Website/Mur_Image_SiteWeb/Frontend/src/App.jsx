@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import Screen from './component/screen';
 import Form from './component/form';
+import Dropzone from './component/DropZone';  
 import TimeLinePart from './component/timeLinePart';
 
 function App() {
@@ -97,15 +98,18 @@ function App() {
       <div className="screens">
 
       {rangeScreens.map((i) => (
-        <Screen key={i} Id_screen={i} selectedTimeLineParts={selectedTimeLineParts} sendingScreensData={sendingScreensData} onSelect={handleScreenSelect}/>
+        <Screen key={i} Id_screen={i} selectedTimeLineParts={selectedTimeLineParts} sendingScreensData={sendingScreensData} onSelect={handleScreenSelect} selectedScreens={selectedScreens}/>
       ))
       }
       </div>
-      <div className="timeLine">
-      {rangeTimeLinePart.map((i) => (
-        <TimeLinePart key={i} Id_part={i} onSelect={handleTimeLinePartSelect}/>
-      ))
-      }
+      <div >
+          <h3>Timeline : </h3>
+          <div className="timeLine">
+          {rangeTimeLinePart.map((i) => (
+            <TimeLinePart key={i} Id_part={i} onSelect={handleTimeLinePartSelect} selectedTimeLineParts={selectedTimeLineParts}/>
+          ))
+          }
+          </div>
       </div>
       <div>
         <p>Selected Screen is : {coordonateToId(selectedScreens[0])}</p>
@@ -116,6 +120,7 @@ function App() {
       </div>
       </div>
   }
+  <Dropzone/>
   </div>
   )
 }
