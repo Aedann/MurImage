@@ -1,7 +1,6 @@
 /* screen.css */
 
 .screen {
-    padding: 20px;
     width: 200px;
     height: 100px;
     border-radius: 12px;
@@ -13,6 +12,7 @@
     margin: 0px;
     color: #333;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+    overflow: hidden;
   }
   
 .screen:hover{
@@ -29,19 +29,20 @@
   background-color: #606060; /* Couleur grise plus foncée pour les éléments sélectionnés au survol */
 }
 
+.absolute{
+  z-index: 7;
+  position: absolute;
+}
 
 .type-label {
-    font-size: 16px;
-    font-weight: bold;
-  }
+  font-size: 16px;
+  font-weight: bold;
+}
   
 
 .image-container {
-    margin-top: 10px; /* Ajustez la marge selon vos préférences */
 }
 
 .image-background {
-    width: 200px; /* Ajustez la largeur selon vos préférences */
-    height: 100px; /* Ajustez la hauteur selon vos préférences */
-    background-size: cover; /* Ajustez le comportement du redimensionnement de l'image */
+    z-index: -4;
 }

@@ -1,20 +1,11 @@
 // ScreenComponent.js
 
 import React, { useEffect, useState } from 'react';
-import ReactCrop from 'react-image-crop'
 import PropTypes from 'prop-types';
+import CroppedImage from './CroppedImage';
 import "./screen.css";
 
 const Screen = ({Id_screen, selectedTimeLineParts, sendingScreensData, onSelect, selectedScreens, screens, setScreens}) => {
-
-    //Si c'est une image
-    const [crop, setCrop] = useState({
-        unit: '%', 
-        x: 0,
-        y: 0,
-        width: 100,
-        height: 100
-    })
 
     //Passage de l'id dans l'array d'écrans (0 -> 8) aux coordonnées de l'écran dans la grille (3x3)
     const idToCoordonate = (id) => {
@@ -28,13 +19,22 @@ const Screen = ({Id_screen, selectedTimeLineParts, sendingScreensData, onSelect,
     const minY = Math.min(selectedScreens[0][1], selectedScreens[1][1]);
     const maxY = Math.max(selectedScreens[0][1], selectedScreens[1][1]);
 
-    useEffect(() => { //CORRIGER ICI LA LOGIQUE
+    useEffect(() => { //Permet de savoir si l'écran est sélectionné ou non
         const coord = idToCoordonate(Id_screen);
         if(coord[0] >= minX && coord[0] <=  maxX && coord[1] >= minY && coord[1] <= maxY)
-            setScreens( screens => ({...screens, [Id_screen]: {...[Id_screen], isSelected: true }}));
+            setScreens( screens => ({...screens,
+                                     [Id_screen]:{
+                                        ...screens[Id_screen],
+                                        isSelected: true
+                                    }}));
         else
-            setScreens( screens => ({...screens, [Id_screen]: {...[Id_screen], isSelected: false }}));
-    }, [selectedScreens, screens]);
+            setScreens( screens => ({...screens,
+                                     [Id_screen]:{
+                                        ...screens[Id_screen],
+                                        isSelected: false
+                                    }}));
+    }, [selectedScreens]);//J'ai corriger la sensibilité en enlevant screens psk on n'a pas besoin de screens pour savoir si notre écran est sélectionné.
+
 
 
     const handleSelect = (e) => {
@@ -45,8 +45,13 @@ const Screen = ({Id_screen, selectedTimeLineParts, sendingScreensData, onSelect,
     const maxPart =  Math.max(selectedTimeLineParts[0], selectedTimeLineParts[1]);
 
     useEffect(() => {
-        setScreens( screens => ({...screens, [Id_screen]: {...[Id_screen], type: sendingScreensData[minPart][Id_screen].type }}));
-        setScreens( screens => ({...screens, [Id_screen]: {...[Id_screen], parameters: sendingScreensData[minPart][Id_screen].parameters }}));
+        setScreens( screens => ({
+            ...screens,
+            [Id_screen] : {
+            ...screens[Id_screen],
+            type: sendingScreensData[minPart][Id_screen].type,
+            parameters: sendingScreensData[minPart][Id_screen].parameters
+        }}));
 
         for(let i = minPart + 1; i < maxPart; i++)
         {   
@@ -58,45 +63,20 @@ const Screen = ({Id_screen, selectedTimeLineParts, sendingScreensData, onSelect,
                 
         }
 
-        if(screens[Id_screen].type == "image" && screens[Id_screen].parameters.cut)
-        {
-            setCrop({
-                unit: 'px', 
-                x: screens[Id_screen].parameters.start_coordinates[0],
-                y: screens[Id_screen].parameters.start_coordinates[1],
-                width: screens[Id_screen].parameters.end_coordinates[0] - screens[Id_screen].parameters.start_coordinates[0],
-                height: screens[Id_screen].parameters.end_coordinates[1] - screens[Id_screen].parameters.start_coordinates[1]
-            })
-        }
-        else
-        {
-            setCrop({
-                unit: '%', 
-                x: 0,
-                y: 0,
-                width: 100,
-                height: 100
-            })
-        }
     },[selectedTimeLineParts, sendingScreensData]);
 
-    
+    // Coordonnées de début et de fin pour le recadrage
     return (
     <div className={`screen ${(screens[Id_screen].isSelected && "isSelected")}`} onClick={(e) => handleSelect(e)}>
-        <h2>Screen {Id_screen}</h2>
-        <p className="type-label">{screens[Id_screen].type}</p>
-
+        <div className="absolute">
+            <h2>Screen {Id_screen}</h2>
+            <p className="type-label">{screens[Id_screen].type}</p>
+        </div>
         {screens[Id_screen].type === "image" && (
-            <div className="image-container">
-                <ReactCrop crop={crop}>
-                    <img
-                        className="image-background"
-                        src={screens[Id_screen].parameters.image_url}
-                        alt={`Screen ${Id_screen} Image`}
-                    />
-                </ReactCrop>
-            </div>
-        )}
+        <div className="image-container">
+            <CroppedImage url={screens[Id_screen].parameters.image_url} startCoordinates={screens[Id_screen].parameters.start_coordinates} endCoordinates={screens[Id_screen].parameters.end_coordinates} Id_screen={Id_screen}/>
+        </div>
+    )}
     </div>
     );
 };

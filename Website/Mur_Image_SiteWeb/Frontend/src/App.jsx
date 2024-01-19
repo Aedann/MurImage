@@ -8,7 +8,6 @@ import TimeLinePart from './component/timeLinePart';
 function App() {
   const [selectedTimeLineParts, setSelectedTimeLineParts] = useState([0,0]);
   const [selectedScreens, setSelectedScreens] = useState([[-1,-1],[-1,-1]]);
-  const [fetchedScreensData, setFetchedScreensData] = useState([]);
   const [sendingScreensData, setSendingScreensData] = useState([]);
   const [screens, setScreens] = useState([
     {type:"",parameters:{},isSelected:false},
@@ -31,7 +30,6 @@ function App() {
           throw new Error('Erreur lors de la récupération des données.');
         }
         const data = await response.json();
-        setFetchedScreensData(data);
         setSendingScreensData(data);
       } catch (error) {
         console.error('Erreur:', error.message);
@@ -42,8 +40,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log("fetchedScreensData updated: ", fetchedScreensData);
-  }, [fetchedScreensData]);
+    console.log("screens updated: ", screens);
+  }, [screens]);
   
   useEffect(() => {
     console.log("sendingScreensData updated: ", sendingScreensData);
@@ -107,7 +105,6 @@ function App() {
       <div>
       <h1>Mur d'image </h1>
       <div className="screens">
-
       {rangeScreens.map((index) => (
         <Screen key={index} Id_screen={index} selectedTimeLineParts={selectedTimeLineParts} sendingScreensData={sendingScreensData} onSelect={handleScreenSelect} selectedScreens={selectedScreens} screens={screens} setScreens={setScreens} />
       ))
@@ -124,10 +121,9 @@ function App() {
       </div>
       <div>
         <p>Selected Screen is : {coordonateToId(selectedScreens[0])}</p>
-        {/* {(selectedScreens[0][0] !== -1) &&
-          <Form sendingScreensData={sendingScreensData} setSendingScreensData={setSendingScreensData} selectedScreen={coordonateToId(selectedScreens[0])}/> // pour l'instant le form prend pas en compte le contrôle click 
-        } */}
-
+        {(selectedScreens[0][0] !== -1) &&
+          <Form sendingScreensData={sendingScreensData} setSendingScreensData={setSendingScreensData} selectedScreens={coordonateToId(selectedScreens[0])} screens={screens} setScreens={setScreens} selectedTimeLineParts={selectedTimeLineParts}/> // pour l'instant le form prend pas en compte le contrôle click 
+        }
       </div>
       </div>
   }

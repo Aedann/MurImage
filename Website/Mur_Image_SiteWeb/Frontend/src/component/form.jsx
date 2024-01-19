@@ -10,7 +10,8 @@ import "./screen.css";
 
 const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, screens, setScreens, selectedTimeLineParts}) => {
     const [file, setFile] = useState(null);
-    const [formState, setFormState] = useState("singleScreen"); //Or Images or Conflicting
+    const [formState, setFormState] = useState("singleScreen"); //Or images or conflicting
+    const [SelectedScreenIds, setSelectedScreenIds] = useState([]);
 
 
     const idToCoordonate = (id) => {
@@ -20,23 +21,53 @@ const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, scree
     }
     let coord = -1;
 
-    const minX = Math.min(selectedScreens[0][0], selectedScreens[1][0]);
-    const maxX = Math.max(selectedScreens[0][0], selectedScreens[1][0]);
-    const minY = Math.min(selectedScreens[0][1], selectedScreens[1][1]);
-    const maxY = Math.max(selectedScreens[0][1], selectedScreens[1][1]);
-
-    useEffect(() => {
-        let i = 0
-        for(; i < 9; i++)
+    //L'ERREUR EST ICI A CORRIGER  : selectedScreenIds reste vide après ce useEffect ------------------------------------------------------------------
+    useEffect(() => {//Stocke un tableau d'id d'écrans sélectionnés
+        setSelectedScreenIds([]);
+        for(let i = 0; i < selectedScreens.length; i++)
         {
-            if(screens[i].isSelected)
-            {
-                //tu parcours les screens, et tu regarde si elles so
-                ;
+            coord = idToCoordonate(i);
+            if(coord === selectedScreens[i]){
+                setSelectedScreenIds(SelectedScreenIds => [...SelectedScreenIds, i]);
+            }
+        }        
+    },[selectedScreens]);
+
+    // const minX = Math.min(selectedScreens[0][0], selectedScreens[1][0]);
+    // const maxX = Math.max(selectedScreens[0][0], selectedScreens[1][0]);
+    // const minY = Math.min(selectedScreens[0][1], selectedScreens[1][1]);
+    // const maxY = Math.max(selectedScreens[0][1], selectedScreens[1][1]);
+
+    function findFormState(){
+        if(selectedScreens.length === 1){
+            setFormState("singleScreen");
+            return;
+        }else{
+            let i = 0
+            let j = 0
+            for(; i < 9;i++){
+                if(!screens[i].isSelected){break;}
+            }//i = premier écran sélectionné
+            for(; j < 9; j++)
+            {//on parcourt les screens, et on regarde si elles sont du même type
+                if(screens[j].isSelected)
+                {
+                    if(screens[j].type !== screens[i].type)
+                    {
+                        setFormState("conflicting");
+                        return;
+                    }
+                }
+            }//En fait peut être que ça sert à rien si suelement le type image peut être en multiselection.
+            if(screens[i].type === "image"){
+                setFormState("images");
+                return;
             }
         }
-        for(;i < 9; i++)
+    }
 
+    useEffect(() => {
+        findFormState();
     }, [selectedScreens, selectedTimeLineParts, screens]);
 
 
@@ -44,7 +75,7 @@ const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, scree
         const newType = event.target.value;
         setSendingScreensData((prevData) =>
             prevData.map((screen) =>
-                screen.Id_screen === selectedScreen
+                screen.SelectedScreenIds === selectedScreen
                     ? { ...screen, type: newType }
                     : screen
             )
@@ -55,7 +86,7 @@ const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, scree
         const paramValue = event.target.value;
         setSendingScreensData((prevData) =>
             prevData.map((screen) =>
-                screen.Id_screen === selectedScreen
+                screen.SelectedScreenIds === selectedScreen
                     ? {
                         ...screen,
                         parametres: {
@@ -82,7 +113,7 @@ const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, scree
               console.log('Image envoyée avec succès:', data);
               setSendingScreensData((prevData) => 
                 prevData.map((screen) =>
-                    (screen.Id_screen === selectedScreen)
+                    (screen.SelectedScreenIds === selectedScreen)
                         ? {
                             ...screen,
                             parametres: {
@@ -102,7 +133,7 @@ const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, scree
 
     async function handleCommit(e){
         e.preventDefault();
-        if(sendingScreensData.find(screen => screen.Id_screen === selectedScreen)?.type == "image"){
+        if(screens[SelectedScreenIds[0]].type == "image"){
             await uploadImage();
         }
         await fetch('http://localhost:4800/content', {
@@ -118,46 +149,46 @@ const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, scree
         })
     }
     
-    
-    return (
+    if(SelectedScreenIds.length !== 0){
+    return ( 
         <div className="form">
+            {(formState === "singleScreen")&& 
             <form>
                 <label>
-                    {console.log("Found : ",sendingScreensData.find(screen => screen.Id_screen === selectedScreen))}
                     Type:
                 </label>
-                <select value={sendingScreensData.find(screen => screen.Id_screen === selectedScreen)?.type} onChange={handleChangeType}>
+                <select value={screens[SelectedScreenIds[0]].type} onChange={handleChangeType}>
                     <option value="weather">Meteo</option>
                     <option value="News">News</option>
                     <option value="image">Image</option>
                     <option value="announcement">Annonce</option>
                 </select>
                 <div>
-                    {(sendingScreensData.find(screen => screen.Id_screen === selectedScreen).type === 'image') && (
+                    {(screens[SelectedScreenIds[0]].type === 'image') && (
                         <label>
                             Entrer l'URL de l'image :
                             <input
                                 type="text"
-                                value={sendingScreensData.find(screen => screen.Id_screen === selectedScreen)?.parametres.url || ''}
+                                value={screens[SelectedScreenIds[0]].parametres.url || ''}
                                 onChange={(e) => handleChangeParameters("url", e)}
                             />
                             Or upload image:
-                            {/* <DropZone file={file} setFile={setFile} /> */}
+                            <DropZone file={file} setFile={setFile} />
                         </label>
                     )}
-                    {(sendingScreensData.find(screen => screen.Id_screen === selectedScreen).type === 'announcement') && (
+                    {(screens[SelectedScreenIds[0]].type === 'announcement') && (
                         <label>
                             Entrer un titre d'Annonce:
                             <h2>
                                 <input
                                     type="text"
-                                    value={sendingScreensData.find(screen => screen.Id_screen === selectedScreen)?.parametres.text || ''}
+                                    value={screens[SelectedScreenIds[0]].parametres.text || ''}
                                     onChange={(e) => handleChangeParameters("title", e)}
                                 />
                             </h2>
                             <input
                                     type="text"
-                                    value={sendingScreensData.find(screen => screen.Id_screen === selectedScreen)?.parametres.text || ''}
+                                    value={screens[SelectedScreenIds[0]].parametres.text || ''}
                                     onChange={(e) => handleChangeParameters("content", e)}
                                 />
                         </label>
@@ -165,8 +196,10 @@ const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, scree
                 </div>
                 <button onSubmit={handleCommit}>Commit</button>
             </form>
+            }
         </div>
     );
+    }else{return(<div></div>)}
 };
 
 export default Form;
