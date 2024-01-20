@@ -19,18 +19,17 @@ const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, scree
         return [-1, -1];
         return [(id % 3), ((id - (id % 3)) / 3)];
     }
-    let coord = -1;
-
+    
     //L'ERREUR EST ICI A CORRIGER  : selectedScreenIds reste vide après ce useEffect ------------------------------------------------------------------
     useEffect(() => {//Stocke un tableau d'id d'écrans sélectionnés
+        console.log("Entering useEffect: with screens : ", screens);
         setSelectedScreenIds([]);
-        for(let i = 0; i < selectedScreens.length; i++)
-        {
-            coord = idToCoordonate(i);
-            if(coord === selectedScreens[i]){
-                setSelectedScreenIds(SelectedScreenIds => [...SelectedScreenIds, i]);
+        for(let k = 0; k < 9; k++){
+            if(screens[k].isSelected){
+                console.log("Added Id : ", k);
+                setSelectedScreenIds(SelectedScreenIds => [...SelectedScreenIds, k]);
             }
-        }        
+        }
     },[selectedScreens]);
 
     // const minX = Math.min(selectedScreens[0][0], selectedScreens[1][0]);
@@ -39,8 +38,9 @@ const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, scree
     // const maxY = Math.max(selectedScreens[0][1], selectedScreens[1][1]);
 
     function findFormState(){
-        if(selectedScreens.length === 1){
+        if(SelectedScreenIds.length === 1){
             setFormState("singleScreen");
+            console.log("FormState: singleScreen");
             return;
         }else{
             let i = 0
@@ -55,18 +55,21 @@ const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, scree
                     if(screens[j].type !== screens[i].type)
                     {
                         setFormState("conflicting");
+                        console.log("FormState: conflicting");
                         return;
                     }
                 }
             }//En fait peut être que ça sert à rien si suelement le type image peut être en multiselection.
             if(screens[i].type === "image"){
                 setFormState("images");
+                console.log("FormState: images");
                 return;
             }
         }
     }
 
     useEffect(() => {
+        console.log("Entering findFormState") 
         findFormState();
     }, [selectedScreens, selectedTimeLineParts, screens]);
 
@@ -148,7 +151,7 @@ const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, scree
           console.log('Ecran mis à jour avec succès : ', data);
         })
     }
-    
+    console.log("SelectedScreenIds: ", SelectedScreenIds);
     if(SelectedScreenIds.length !== 0){
     return ( 
         <div className="form">

@@ -121,9 +121,8 @@ function App() {
       </div>
       <div>
         <p>Selected Screen is : {coordonateToId(selectedScreens[0])}</p>
-        {(selectedScreens[0][0] !== -1) &&
-          <Form sendingScreensData={sendingScreensData} setSendingScreensData={setSendingScreensData} selectedScreens={coordonateToId(selectedScreens[0])} screens={screens} setScreens={setScreens} selectedTimeLineParts={selectedTimeLineParts}/> // pour l'instant le form prend pas en compte le contrôle click 
-        }
+          <p>bite</p>
+          <Form sendingScreensData={sendingScreensData} setSendingScreensData={setSendingScreensData} selectedScreens={selectedScreens} screens={screens} setScreens={setScreens} selectedTimeLineParts={selectedTimeLineParts}/> 
       </div>
       </div>
   }
