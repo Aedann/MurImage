@@ -19,7 +19,7 @@ const DropZone = (file, setFile) => {
     <div className="drop-zone" onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
       {file ? (
         <div className="preview">
-          <img src={URL.createObjectURL(file)} alt="Preview" />
+          {/* <img src={URL.createObjectURL(file)} alt="Preview" /> */}
         </div>
       ) : (
         <div className="instructions">

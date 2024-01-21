@@ -6,7 +6,7 @@ import CroppedImage from './CroppedImage';
 import "./screen.css";
 
 const Screen = ({Id_screen, selectedTimeLineParts, sendingScreensData, onSelect, selectedScreens, screens, setScreens}) => {
-
+    
     //Passage de l'id dans l'array d'écrans (0 -> 8) aux coordonnées de l'écran dans la grille (3x3)
     const idToCoordonate = (id) => {
         if(id == -1)
@@ -20,19 +20,23 @@ const Screen = ({Id_screen, selectedTimeLineParts, sendingScreensData, onSelect,
     const maxY = Math.max(selectedScreens[0][1], selectedScreens[1][1]);
 
     useEffect(() => { //Permet de savoir si l'écran est sélectionné ou non
+        console.log("Modifie screens par selectedScreens")
         const coord = idToCoordonate(Id_screen);
-        if(coord[0] >= minX && coord[0] <=  maxX && coord[1] >= minY && coord[1] <= maxY)
+        if(coord[0] >= minX && coord[0] <=  maxX && coord[1] >= minY && coord[1] <= maxY){
+            console.log("SetScreens: isSelected true")
             setScreens( screens => ({...screens,
                                      [Id_screen]:{
                                         ...screens[Id_screen],
                                         isSelected: true
                                     }}));
-        else
+        }else{
+            console.log("SetScreens: isSelected false")
             setScreens( screens => ({...screens,
                                      [Id_screen]:{
                                         ...screens[Id_screen],
                                         isSelected: false
                                     }}));
+        }
     }, [selectedScreens]);//J'ai corriger la sensibilité en enlevant screens psk on n'a pas besoin de screens pour savoir si notre écran est sélectionné.
 
 
@@ -45,6 +49,7 @@ const Screen = ({Id_screen, selectedTimeLineParts, sendingScreensData, onSelect,
     const maxPart =  Math.max(selectedTimeLineParts[0], selectedTimeLineParts[1]);
 
     useEffect(() => {
+        console.log("SetScreens: type and parameters")
         setScreens( screens => ({
             ...screens,
             [Id_screen] : {
@@ -53,16 +58,14 @@ const Screen = ({Id_screen, selectedTimeLineParts, sendingScreensData, onSelect,
             parameters: sendingScreensData[minPart][Id_screen].parameters
         }}));
 
-        for(let i = minPart + 1; i < maxPart; i++)
-        {   
+        for(let i = minPart + 1; i < maxPart; i++){   
             if((screens[Id_screen].type !== sendingScreensData[i][Id_screen].type) ||
             (screens[Id_screen].parameters !== sendingScreensData[i][Id_screen].parameters))
-            {
+            {        
+                console.log("SetScreens: Conflicting")
                 setScreens( screens => ({...screens, [Id_screen]: {...[Id_screen], type: "conflicting" }}));
             }
-                
         }
-
     },[selectedTimeLineParts, sendingScreensData]);
 
     // Coordonnées de début et de fin pour le recadrage

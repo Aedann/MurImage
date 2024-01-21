@@ -8,19 +8,11 @@ import "./screen.css";
 //Print "conflicting" if there are mutliple types of screens in selectedScreens
 
 
-const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, screens, setScreens, selectedTimeLineParts}) => {
+const Form = ({sendingScreensData, setSendingScreensData, screens, selectedTimeLineParts}) => {
     const [file, setFile] = useState(null);
     const [formState, setFormState] = useState("singleScreen"); //Or images or conflicting
     const [SelectedScreenIds, setSelectedScreenIds] = useState([]);
 
-
-    const idToCoordonate = (id) => {
-        if(id == -1)
-        return [-1, -1];
-        return [(id % 3), ((id - (id % 3)) / 3)];
-    }
-    
-    //L'ERREUR EST ICI A CORRIGER  : selectedScreenIds reste vide après ce useEffect ------------------------------------------------------------------
     useEffect(() => {//Stocke un tableau d'id d'écrans sélectionnés
         console.log("Entering useEffect: with screens : ", screens);
         setSelectedScreenIds([]);
@@ -30,14 +22,10 @@ const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, scree
                 setSelectedScreenIds(SelectedScreenIds => [...SelectedScreenIds, k]);
             }
         }
-    },[selectedScreens]);
+    },[screens]);
 
-    // const minX = Math.min(selectedScreens[0][0], selectedScreens[1][0]);
-    // const maxX = Math.max(selectedScreens[0][0], selectedScreens[1][0]);
-    // const minY = Math.min(selectedScreens[0][1], selectedScreens[1][1]);
-    // const maxY = Math.max(selectedScreens[0][1], selectedScreens[1][1]);
 
-    function findFormState(){
+    function findFormState(){//Depend de screens et SelectedScreenIds //Rajouter le SelectedScreenIds==[] 
         if(SelectedScreenIds.length === 1){
             setFormState("singleScreen");
             console.log("FormState: singleScreen");
@@ -71,35 +59,62 @@ const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, scree
     useEffect(() => {
         console.log("Entering findFormState") 
         findFormState();
-    }, [selectedScreens, selectedTimeLineParts, screens]);
+    }, [SelectedScreenIds]);
 
 
     const handleChangeType = (event) => {
-        const newType = event.target.value;
-        setSendingScreensData((prevData) =>
-            prevData.map((screen) =>
-                screen.SelectedScreenIds === selectedScreen
-                    ? { ...screen, type: newType }
-                    : screen
-            )
-        );
+        const newType = event.target.value;        
+        console.log("selectedTimeLineParts: ", selectedTimeLineParts);
+        const minPart =  Math.min(selectedTimeLineParts[0], selectedTimeLineParts[1]); 
+        const maxPart =  Math.max(selectedTimeLineParts[0], selectedTimeLineParts[1]);    
+        console.log("paramName: ", event.target.value);
+        setSendingScreensData(prevData => {
+            let updatedData = { ...prevData };
+            console.log(" with SelectedScreenIds : ", SelectedScreenIds," and minPart, maxPart : ", minPart, maxPart);
+            for (let j = minPart; j < maxPart+1; j++) { //Pour chaque Periode
+              for (let i = 0; i < 9; i++) { //Pour chaque écran
+                console.log("comparing updatedData[j][i].Id_Screen : ", updatedData[j][i].Id_screen);
+                if ((SelectedScreenIds.includes(updatedData[j][i].Id_screen))) {
+                  console.log("found selected screen for i,j : ", i, j);
+                  updatedData[j][i] = {
+                    ...updatedData[j][i],
+                    type: newType,
+                  };
+                }
+              }
+            }
+            console.log("updatedData: ", updatedData);
+            return updatedData;
+        });
     };
 
     const handleChangeParameters = (paramName, event) => {
         const paramValue = event.target.value;
-        setSendingScreensData((prevData) =>
-            prevData.map((screen) =>
-                screen.SelectedScreenIds === selectedScreen
-                    ? {
-                        ...screen,
-                        parametres: {
-                            ...screen.parametres,
-                            [paramName]: paramValue,
-                        },
-                    }
-                    : screen
-            )
-        );
+        console.log("selectedTimeLineParts: ", selectedTimeLineParts);
+        const minPart =  Math.min(selectedTimeLineParts[0], selectedTimeLineParts[1]); 
+        const maxPart =  Math.max(selectedTimeLineParts[0], selectedTimeLineParts[1]);    
+        console.log("paramName: ", event.target.value);
+        setSendingScreensData(prevData => {
+            let updatedData = { ...prevData };
+            console.log(" with SelectedScreenIds : ", SelectedScreenIds," and minPart, maxPart : ", minPart, maxPart);
+            for (let j = minPart; j < maxPart+1; j++) { //Pour chaque Periode
+              for (let i = 0; i < 9; i++) { //Pour chaque écran
+                console.log("comparing updatedData[j][i].Id_Screen : ", updatedData[j][i].Id_screen);
+                if ((SelectedScreenIds.includes(updatedData[j][i].Id_screen))) {
+                  console.log("found selected screen for i,j : ", i, j);
+                  updatedData[j][i] = {
+                    ...updatedData[j][i],
+                    parameters: {
+                      ...updatedData[j][i].parameters,
+                      [paramName]: paramValue,
+                    },
+                  };
+                }
+              }
+            }
+            console.log("updatedData: ", updatedData);
+            return updatedData;
+        });
     };
 
     async function uploadImage(){
@@ -155,6 +170,7 @@ const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, scree
     if(SelectedScreenIds.length !== 0){
     return ( 
         <div className="form">
+            <p>Selected Screen is : {SelectedScreenIds}</p>
             {(formState === "singleScreen")&& 
             <form>
                 <label>
@@ -172,8 +188,8 @@ const Form = ({sendingScreensData, setSendingScreensData, selectedScreens, scree
                             Entrer l'URL de l'image :
                             <input
                                 type="text"
-                                value={screens[SelectedScreenIds[0]].parametres.url || ''}
-                                onChange={(e) => handleChangeParameters("url", e)}
+                                value={screens[SelectedScreenIds[0]].parameters.image_url || ''}
+                                onChange={(e) => handleChangeParameters("image_url", e)}
                             />
                             Or upload image:
                             <DropZone file={file} setFile={setFile} />

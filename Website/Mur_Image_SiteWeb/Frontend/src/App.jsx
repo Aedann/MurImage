@@ -42,7 +42,7 @@ function App() {
   useEffect(() => {
     console.log("screens updated: ", screens);
   }, [screens]);
-  
+
   useEffect(() => {
     console.log("sendingScreensData updated: ", sendingScreensData);
   }, [sendingScreensData]);
@@ -120,9 +120,7 @@ function App() {
           </div>
       </div>
       <div>
-        <p>Selected Screen is : {coordonateToId(selectedScreens[0])}</p>
-          <p>bite</p>
-          <Form sendingScreensData={sendingScreensData} setSendingScreensData={setSendingScreensData} selectedScreens={selectedScreens} screens={screens} setScreens={setScreens} selectedTimeLineParts={selectedTimeLineParts}/> 
+        <Form sendingScreensData={sendingScreensData} setSendingScreensData={setSendingScreensData} selectedScreens={selectedScreens} screens={screens} selectedTimeLineParts={selectedTimeLineParts}/> 
       </div>
       </div>
   }
@@ -131,3 +129,6 @@ function App() {
 }
 
 export default App
+/*
+
+*/
