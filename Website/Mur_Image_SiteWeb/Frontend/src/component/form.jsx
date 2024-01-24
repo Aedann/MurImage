@@ -8,7 +8,7 @@ import "./screen.css";
 //Print "conflicting" if there are mutliple types of screens in selectedScreens
 
 
-const Form = ({sendingScreensData, setSendingScreensData, screens, selectedTimeLineParts}) => {
+const Form = ({sendingScreensData, setSendingScreensData, screens, selectedTimeLineParts, selectedScreens}) => {
     const [formState, setFormState] = useState("singleScreen"); //Or images or conflicting or sameType
     const [SelectedScreenIds, setSelectedScreenIds] = useState([]);
 
@@ -186,7 +186,7 @@ const Form = ({sendingScreensData, setSendingScreensData, screens, selectedTimeL
                             Or upload image:
                             <div >
                                 <ImageForm SelectedScreenIds={SelectedScreenIds} sendingScreensData={sendingScreensData} setSendingScreensData={setSendingScreensData}
-                                selectedTimeLineParts={selectedTimeLineParts}/>
+                                selectedTimeLineParts={selectedTimeLineParts} selectedScreens={selectedScreens}/>
                             </div>
 
                         </label>

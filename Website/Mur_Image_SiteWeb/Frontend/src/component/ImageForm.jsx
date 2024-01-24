@@ -1,14 +1,51 @@
 import { useEffect, useState } from 'react';
 import './ImageForm.css';
 
-const ImageForm = ({SelectedScreenIds, sendingScreensData, setSendingScreensData, selectedTimeLineParts}) => {
+const ImageForm = ({SelectedScreenIds, sendingScreensData, setSendingScreensData, selectedTimeLineParts, selectedScreens}) => {
 
   const [file, setFile] = useState(null);
   const [requestSuccess, setRequestSuccess] = useState(null);
 
+  function getImageSizeFromFile(file){
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.src = e.target.result;
+  
+      img.onload = () => {
+        const imageSize = { x: img.width, y: img.height };
+        return imageSize;
+      };
+    };
+  };
+
+  async function getImageSizeFromUrl(url){
+    const loadImage = path => {
+      return new Promise((resolve, reject) => {
+        const img = new Image()
+        img.crossOrigin = 'Anonymous' // to avoid CORS if used with Canvas
+        img.src = path
+        img.onload = () => {
+          resolve(img)
+        }
+        img.onerror = e => {
+          reject(e)
+        }
+      })
+    }
+    try{
+      const img = await loadImage(url)
+      const imageSize = { x: img.width, y: img.height };
+      return imageSize;
+    }catch(e){
+      console.log(e)
+    }
+  };  
+  
   const handleDrop = (event) => {
     event.preventDefault();
     const droppedFile = event.dataTransfer.files[0];
+
     setFile(droppedFile);
   };
 
@@ -21,6 +58,39 @@ const ImageForm = ({SelectedScreenIds, sendingScreensData, setSendingScreensData
     setRequestSuccess(null);
   }, [file]);
 
+
+  function generateCutCoordinates(imageSize){
+    let coordinates = [{Id_screen : 0},{Id_screen : 1},{Id_screen : 2},{Id_screen : 3},{Id_screen : 4},{Id_screen : 5},{Id_screen : 6},{Id_screen : 7},{Id_screen :8}]
+    const minX = Math.min(selectedScreens[0][0], selectedScreens[1][0]);
+    const maxX = Math.max(selectedScreens[0][0], selectedScreens[1][0]);
+    const minY = Math.min(selectedScreens[0][1], selectedScreens[1][1]);
+    const maxY = Math.max(selectedScreens[0][1], selectedScreens[1][1]);
+    const screenXs = maxX - minX +1 ; //Le nombre de colonnes d'écrans sélectionnés
+    const screenYs = maxY - minY +1 ; //Le nombre de lignes d'écrans sélectionnés
+    const quantaX = imageSize.x / screenXs;
+    const quantaY = imageSize.y / screenYs;
+    console.log({screenXs : screenXs, screenYs : screenYs, quantaX : quantaX, quantaY : quantaY})
+    console.log({SelectedScreenIds})
+    let incrementX = 0;
+    let incrementY = 0;
+    for(let i = 0; i < 9; i++){
+      if(SelectedScreenIds.includes(i)){
+        console.log("it is included")
+        if(incrementX==screenXs){
+          console.log("incrementX==screenXs")
+          incrementX=0;
+          incrementY++;
+        }
+        coordinates[i].start_coordinates = {x : incrementX*quantaX, y : incrementY*quantaY};
+        coordinates[i].end_coordinates = {x : (incrementX+1)*quantaX, y : (incrementY+1)*quantaY};
+        incrementX++;
+        console.log({i : i, incrementX : incrementX, incrementY : incrementY})
+      }
+    }
+    console.log("coordinates : ", coordinates)
+    return coordinates;
+  }
+
   async function uploadImage(event){ //AJOUTER LA LOGIQUE DE CREATION DE cut et de end_coordinates et start_coordinates
     event.preventDefault();
     const minPart =  Math.min(selectedTimeLineParts[0], selectedTimeLineParts[1]); 
@@ -30,9 +100,9 @@ const ImageForm = ({SelectedScreenIds, sendingScreensData, setSendingScreensData
       const formData = new FormData();
       formData.append('file', file);
       console.log("formData : ", formData)
-      //await fetch('https://mountain-big-basement.glitch.me/uploads', {
-      await fetch('http://localhost:4800/uploads', {
-          method: 'POST',
+      await fetch('https://mountain-big-basement.glitch.me/uploads', {
+      //await fetch('http://localhost:4800/uploads', {
+        method: 'POST',
         body: formData,
       })
         .then(response => {
@@ -41,8 +111,11 @@ const ImageForm = ({SelectedScreenIds, sendingScreensData, setSendingScreensData
             setRequestSuccess(true);
           }
           return(response.json())})
-        .then(data => {
+        .then(async data => {
           console.log('Image envoyée avec succès:', data);
+          const ImageSize = await getImageSizeFromUrl(data.imgurLink);
+          console.log("ImageSize : ", ImageSize)
+          const cutCoordinates = generateCutCoordinates(ImageSize);
           setSendingScreensData(prevData => {
             let updatedData = { ...prevData };
             console.log("Entering setSendingScreensData")
@@ -54,7 +127,13 @@ const ImageForm = ({SelectedScreenIds, sendingScreensData, setSendingScreensData
                     parameters: {
                             ...updatedData[j][i].parameters,
                             image_url: data.imgurLink, 
-                            //AJOUTER LA LOGIQUE ICI
+                            start_coordinates: {
+                              x : cutCoordinates[i].start_coordinates.x,
+                              y : cutCoordinates[i].start_coordinates.y},
+                            end_coordinates: {
+                              x : cutCoordinates[i].end_coordinates.x,
+                              y : cutCoordinates[i].end_coordinates.y
+                            },
                     },
                   }
                 }
@@ -78,7 +157,7 @@ const ImageForm = ({SelectedScreenIds, sendingScreensData, setSendingScreensData
       case true:
         return <p style={{color : "green"}}>Image envoyée avec succès, n'oubilez pas de Commit</p>;
       case false:
-        return <p style={{color : "red"}}>Erreur lors de l'envoi de l'image. Veuillez relancer le serveur https://glitch.com/edit/#!/mountain-big-basement</p>
+        return <p style={{color : "red"}}>Erreur lors de l'envoi de l'image. Veuillez réessayer ou relancer le serveur https://glitch.com/edit/#!/mountain-big-basement</p>
       default:
         return <span></span>;
     }
