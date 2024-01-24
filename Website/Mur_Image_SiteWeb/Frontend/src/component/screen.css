@@ -16,17 +16,18 @@
   }
   
 .screen:hover{
-    background-color: #acacac;
-    color: #333;
-    cursor: pointer;
+  z-index: 10;
+  -webkit-filter: brightness(75%);
+  color: #333;
+  cursor: pointer;
 }
 
 .screen.isSelected {
-  background-color: #808080; /* Couleur grise pour les éléments sélectionnés */
+  -webkit-filter: brightness(65%);
 }
 
 .screen.isSelected:hover {
-  background-color: #606060; /* Couleur grise plus foncée pour les éléments sélectionnés au survol */
+  -webkit-filter: brightness(55%);
 }
 
 .absolute{
@@ -39,9 +40,6 @@
   font-weight: bold;
 }
   
-
-.image-container {
-}
 
 .image-background {
     z-index: -4;

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import Screen from './component/screen';
 import Form from './component/form';
-import Dropzone from './component/DropZone';  
+import ImageForm from './component/ImageForm';  
 import TimeLinePart from './component/timeLinePart';
 
 function App() {
@@ -30,6 +30,7 @@ function App() {
           throw new Error('Erreur lors de la récupération des données.');
         }
         const data = await response.json();
+        console.log("data: ", data);
         setSendingScreensData(data);
       } catch (error) {
         console.error('Erreur:', error.message);
@@ -52,7 +53,7 @@ function App() {
   }, [selectedScreens]);
 
   useEffect(() => {
-    console.log("Timeline selected from" + selectedTimeLineParts[0] * 10 +"s to " + (selectedTimeLineParts[1] * 10 + 10) + "s");
+    console.log("Timeline selected from " + selectedTimeLineParts[0] +" to " + (selectedTimeLineParts[1]));
   }, [selectedTimeLineParts]);
 
   //Passage de l'id dans l'array d'écrans (0 -> 8) aux coordonnées de l'écran dans la grille (3x3)
@@ -103,25 +104,23 @@ function App() {
     <div>
       {(sendingScreensData.length !== 0) &&
       <div>
-      <h1>Mur d'image </h1>
-      <div className="screens">
-      {rangeScreens.map((index) => (
-        <Screen key={index} Id_screen={index} selectedTimeLineParts={selectedTimeLineParts} sendingScreensData={sendingScreensData} onSelect={handleScreenSelect} selectedScreens={selectedScreens} screens={screens} setScreens={setScreens} />
-      ))
-      }
-      </div>
-      <div >
-          <h3>Timeline : </h3>
-          <div className="timeLine">
-          {rangeTimeLinePart.map((i) => (
-            <TimeLinePart key={i} Id_part={i} onSelect={handleTimeLinePartSelect} selectedTimeLineParts={selectedTimeLineParts}/>
-          ))
-          }
-          </div>
-      </div>
-      <div>
-        <Form sendingScreensData={sendingScreensData} setSendingScreensData={setSendingScreensData} selectedScreens={selectedScreens} screens={screens} selectedTimeLineParts={selectedTimeLineParts}/> 
-      </div>
+        <h1>Mur d'image </h1>
+        <div className="screens">
+        {rangeScreens.map((index) => (
+          <Screen key={index} Id_screen={index} selectedTimeLineParts={selectedTimeLineParts} sendingScreensData={sendingScreensData} onSelect={handleScreenSelect} selectedScreens={selectedScreens} screens={screens} setScreens={setScreens} />
+        ))
+        }
+        </div>
+        <div >
+            <h3>Timeline : </h3>
+            <div className="timeLine">
+            {rangeTimeLinePart.map((i) => (
+              <TimeLinePart key={i} Id_part={i} onSelect={handleTimeLinePartSelect} selectedTimeLineParts={selectedTimeLineParts}/>
+            ))
+            }
+            </div>
+        </div>
+        <Form sendingScreensData={sendingScreensData} setSendingScreensData={setSendingScreensData} selectedScreens={selectedScreens} screens={screens} selectedTimeLineParts={selectedTimeLineParts}/>
       </div>
   }
   </div>

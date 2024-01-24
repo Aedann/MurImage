@@ -14,6 +14,9 @@
 }
 
 .screens {
+  margin-right: auto;
+  margin-left: auto ;
+  max-width: 600px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2px; /* Vous pouvez ajuster cet espacement selon vos préférences */

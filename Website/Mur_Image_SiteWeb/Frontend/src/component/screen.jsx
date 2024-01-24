@@ -48,8 +48,9 @@ const Screen = ({Id_screen, selectedTimeLineParts, sendingScreensData, onSelect,
     const minPart =  Math.min(selectedTimeLineParts[0], selectedTimeLineParts[1]); 
     const maxPart =  Math.max(selectedTimeLineParts[0], selectedTimeLineParts[1]);
 
-    useEffect(() => {
+    useEffect(() => {//
         console.log("SetScreens: type and parameters")
+        console.log("sendingScreensData[minPart][Id_screen].type : ", sendingScreensData[minPart][Id_screen].type)
         setScreens( screens => ({
             ...screens,
             [Id_screen] : {
@@ -57,13 +58,16 @@ const Screen = ({Id_screen, selectedTimeLineParts, sendingScreensData, onSelect,
             type: sendingScreensData[minPart][Id_screen].type,
             parameters: sendingScreensData[minPart][Id_screen].parameters
         }}));
-
-        for(let i = minPart + 1; i < maxPart; i++){   
-            if((screens[Id_screen].type !== sendingScreensData[i][Id_screen].type) ||
-            (screens[Id_screen].parameters !== sendingScreensData[i][Id_screen].parameters))
-            {        
-                console.log("SetScreens: Conflicting")
-                setScreens( screens => ({...screens, [Id_screen]: {...[Id_screen], type: "conflicting" }}));
+        console.log("screens : ", screens[Id_screen])
+        console.log({object_length : Object.keys(screens[Id_screen]).length})
+        if((sendingScreensData[minPart][Id_screen].type !== '')&&(sendingScreensData[minPart][Id_screen].type !== undefined)){ //Ne pas rappeler screens[Id_screen].type car il n'est pas encore mis à jour
+            for(let i = minPart; i < maxPart + 1; i++){
+                if((sendingScreensData[minPart][Id_screen].type !== sendingScreensData[i][Id_screen].type) ||
+                (JSON.stringify(sendingScreensData[minPart][Id_screen].parameters) !== JSON.stringify(sendingScreensData[i][Id_screen].parameters))) //Ne JAMAIS utiliser === pour comparer des objets
+                {        
+                    console.log("SetScreens: Conflicting")
+                    setScreens( screens => ({...screens, [Id_screen]: {...[Id_screen], isSelected : screens[Id_screen].isSelected, type: "conflicting" }}));
+                }
             }
         }
     },[selectedTimeLineParts, sendingScreensData]);
@@ -75,7 +79,7 @@ const Screen = ({Id_screen, selectedTimeLineParts, sendingScreensData, onSelect,
             <h2>Screen {Id_screen}</h2>
             <p className="type-label">{screens[Id_screen].type}</p>
         </div>
-        {screens[Id_screen].type === "image" && (
+        {((screens[Id_screen].type === "image")&&(Object.keys(screens[Id_screen].parameters).length !== 0)) && (
         <div className="image-container">
             <CroppedImage url={screens[Id_screen].parameters.image_url} startCoordinates={screens[Id_screen].parameters.start_coordinates} endCoordinates={screens[Id_screen].parameters.end_coordinates} Id_screen={Id_screen}/>
         </div>
@@ -85,3 +89,13 @@ const Screen = ({Id_screen, selectedTimeLineParts, sendingScreensData, onSelect,
 };
 
 export default Screen;
+
+
+/*
+                console.log("i : ",i)
+                console.log("screens[Id_screen].type : ", screens[Id_screen].type, "sendingScreensData[i][Id_screen].type", sendingScreensData[i][Id_screen].type, "screens[Id_screen].parameters :\n", screens[Id_screen].parameters, "sendingScreensData[i][Id_screen].parameters :\n", sendingScreensData[i][Id_screen].parameters)
+                console.log("test type : ",(screens[Id_screen].type !== sendingScreensData[i][Id_screen].type))
+                console.log("test parameters : ",(JSON.stringify(screens[Id_screen].parameters) != JSON.stringify(sendingScreensData[i][Id_screen].parameters)))
+
+
+*/
