@@ -65,6 +65,37 @@ app.post('/content', (req, res) => {
 //   });
 // });
 
+app.post("/uploadTest", async (req, res) => {
+  console.log("poked ! ");   
+  console.log("\n\n\n req : AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n",req);
+  console.log("req.files.length : ",Object.keys(req.files).length);
+  if (!req.files || Object.keys(req.files).length === 0) {
+    console.log("No file uploaded");
+    return res.status(400).json({ msg: 'No file were uploaded' });
+  }
+
+  try {
+
+    const sampleFile = req.files.file;
+    console.log(sampleFile.name);
+    const uploadPath = path.join(__dirname, 'data', sampleFile.name);
+
+    // Enregistrement de l'image sur le serveur Node.js
+    await sampleFile.mv(uploadPath);
+    try {
+      const imageData = fs.readFileSync(uploadPath);
+      const contentType = mime.lookup(uploadPath) || 'application/octet-stream';
+    } catch (error) {
+      console.error('Erreur lors de l\'upload de l\'image sur Imgur:', error.message);
+      res.status(500).json({ msg: error.message });
+    }
+  } catch (error) {
+    console.error('Erreur lors du traitement de l\'image:', error);
+    res.status(500).json({ msg: error.message });
+  }
+})
+
+
 
 app.post('/uploads', async (req, res) => {
   if (!req.files || Object.keys(req.files).length === 0) {
