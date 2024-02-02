@@ -130,9 +130,8 @@ const Form = ({sendingScreensData, setSendingScreensData, screens, selectedTimeL
 
     async function handleCommit(e){
         e.preventDefault();
-        //await axios.post('https://mountain-big-basement.glitch.me/content ', {
-        await axios.post('http://localhost:4800/content ', {
-            "sendingScreensData" : sendingScreensData,
+        await axios.post('https://mountain-big-basement.glitch.me/content', sendingScreensData, {
+        //await axios.post('http://localhost:4800/content', sendingScreensData, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -156,16 +155,19 @@ const Form = ({sendingScreensData, setSendingScreensData, screens, selectedTimeL
     }
 
     console.log("SelectedScreenIds: ", SelectedScreenIds);
+
+    if(screens[SelectedScreenIds[0]]?.parameters?.title !== undefined){
+        console.log("parameters.text UNDEFINED _________________________________________________________ : " )
+    }
     if(SelectedScreenIds.length !== 0){
     return ( 
         <div className="form">
-            <p>Selected Screen is : {SelectedScreenIds}</p>
-            <p>FormState : {formState}</p>
+            {/* <p>Selected Screen is : {SelectedScreenIds}</p>
+            <p>FormState : {formState}</p> */}
             <form>
-                <label>
-                    Type:
-                </label>
-                <select value={renderSelectValue()} onChange={handleChangeType}>
+                <div >
+                    Type:  
+                <select style={{margin:10}} value={renderSelectValue()} onChange={handleChangeType}>
                     {(formState === "conflicting")&& 
                         <option value="Conflicting">Conflicting</option>
                     }
@@ -173,58 +175,64 @@ const Form = ({sendingScreensData, setSendingScreensData, screens, selectedTimeL
                     <option value="News">News</option>
                     <option value="image">Image</option>
                     <option value="announcement">Annonce</option>
+                    {/* <option value="example">Exemple</option> AJOUTER TYPE ICI*/ }
                 </select>
+                </div>
                 <div>
-                    {(((formState === 'images')&&(screens[SelectedScreenIds[0]].type === 'image'))||((formState === 'singleScreen')&&(screens[SelectedScreenIds[0]].type == "image"))) && (
-                        <label>
-                            Entrer l'URL de l'image :
-                            <input
-                                type="text"
-                                value={screens[SelectedScreenIds[0]].parameters.image_url || ''}
-                                onChange={(e) => handleChangeParameters("image_url", e)}
-                            /><br/>
-                            Or upload image:
-                            <div >
-                                <ImageForm SelectedScreenIds={SelectedScreenIds} sendingScreensData={sendingScreensData} setSendingScreensData={setSendingScreensData}
-                                selectedTimeLineParts={selectedTimeLineParts} selectedScreens={selectedScreens}/>
-                            </div>
+                {(((formState === 'images')&&(screens[SelectedScreenIds[0]].type === 'image'))||((formState === 'singleScreen')&&(screens[SelectedScreenIds[0]].type == "image"))) && (
+                    <p>
+                        Entrer l'URL de l'image :
+                        <input
+                            type="text"
+                            value={screens[SelectedScreenIds[0]].parameters.image_url || ''}
+                            onChange={(e) => handleChangeParameters("image_url", e)}
+                        /><br/>
+                        Or upload image:
+                        <div >
+                            <ImageForm SelectedScreenIds={SelectedScreenIds} sendingScreensData={sendingScreensData} setSendingScreensData={setSendingScreensData}
+                            selectedTimeLineParts={selectedTimeLineParts} selectedScreens={selectedScreens}/>
+                        </div>
 
-                        </label>
-                    )}
-                    {(formState == 'singleScreen') && (
-                        (screens[SelectedScreenIds[0]].type === 'announcement') && (
-                        <label>
+                    </p>
+                )}
+                {formState == 'singleScreen' && [
+                    screens[SelectedScreenIds[0]].type === 'announcement' && (
+                    <div key="announcement">
+                        <p >
                             Entrer un titre d'Annonce:
-                            <h2>
-                                <input
-                                    type="text"
-                                    value={screens[SelectedScreenIds[0]].parametres.text || ''}
-                                    onChange={(e) => handleChangeParameters("title", e)}
-                                />
-                            </h2>
-                            <input
-                                    type="text"
-                                    value={screens[SelectedScreenIds[0]].parametres.text || ''}
-                                    onChange={(e) => handleChangeParameters("content", e)}
-                                />
-                        </label>)
-                        (screens[SelectedScreenIds[0]].type === 'example') && (
-                        <label>
-                        Entrer un :
+                        </p>
+                        <h2>
+                            <input  
+                                type="text"
+                                value={(screens[SelectedScreenIds[0]].parameters.title ?? '')}
+                                onChange={(e) => handleChangeParameters("title", e)}
+                                maxLength="50"
+                            />
+                        </h2>
+                            <textarea
+                                value={(screens[SelectedScreenIds[0]].parameters.content ?? '')}
+                                onChange={(e) => handleChangeParameters("content", e)}
+                            />
+                    </div>),
+                    screens[SelectedScreenIds[0]].type === 'example' && (
+                    <div key="example">
+                        <p >
+                            Entrer un :
+                        </p>
                         <h2>
                             <input
                                 type="text"
-                                value={screens[SelectedScreenIds[0]].parametres.text || ''}
+                                value={screens[SelectedScreenIds[0]]?.parametres?.text ?? ''}
                                 onChange={(e) => handleChangeParameters("title", e)}
                             />
                         </h2>
                         <input
                                 type="text"
-                                value={screens[SelectedScreenIds[0]].parametres.text || ''}
+                                value={screens[SelectedScreenIds[0]]?.parametres?.text ?? ''}
                                 onChange={(e) => handleChangeParameters("content", e)}
                             />
-                    </label>)
-                    )}
+                    </div>),
+                ]}
                 </div><br></br><br></br>
                 <button onClick={(e) => handleCommit(e)}>Commit</button>
             </form>

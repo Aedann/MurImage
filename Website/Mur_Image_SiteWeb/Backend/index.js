@@ -11,7 +11,7 @@ const multer = require('multer')
 
 
 const app = express();
-const port = 4800;
+const port = process.env.PORT;
 
 const storage = multer.diskStorage({
   destination: './data', // Dossier de destination pour enregistrer l'image
@@ -27,8 +27,7 @@ app.use(cors());
 
 app.use(bodyParser.json());
 
-//const imgurAccessToken = 'b81882edbe7fb55404a1bf9f59d39ac18113e1f9';
-const imgurAccessToken = process.env.imgurToken;
+const imgurAccessToken = process.env.IMGURTOKEN;
 console.log("imgurAccessToken : ",imgurAccessToken);
 
 
@@ -47,8 +46,9 @@ app.get('/content', (req, res) => {
 app.post('/content', (req, res) => {
   try {
     const filePath = path.join(__dirname, 'data', 'content.json');
-    console.log(filePath);
-    const newData = req.body.sendingScreensData; // Le corps de la requête POST contient les nouvelles données
+    console.log("filePath : ",filePath);
+    console.log("req.body : ",req.body);
+    const newData = req.body; // Le corps de la requête POST contient les nouvelles données
 
     // Écriture des nouvelles données dans le fichier
     console.log(newData);
@@ -92,6 +92,7 @@ app.post('/uploadImgur', upload.single('image'), async function (req, res, next)
     res.status(500).json({ msg: error.message });
   }
 }); 
+
 
 app.listen(port, () => {
   console.log(`Serveur Node.js écoutant sur le port ${port}`);

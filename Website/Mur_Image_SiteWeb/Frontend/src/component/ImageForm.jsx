@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import './ImageForm.css';
 
 const ImageForm = ({SelectedScreenIds, sendingScreensData, setSendingScreensData, selectedTimeLineParts, selectedScreens}) => {
@@ -92,23 +91,7 @@ const ImageForm = ({SelectedScreenIds, sendingScreensData, setSendingScreensData
     return coordinates;
   }
 
-  async function pokeTest(e){
-    e.preventDefault();
-    axios.get("http://localhost:4800/testImgur")
-    .then(response => {
-      console.log("response : ", response)
-      if(response.status === 200){
-        setRequestSuccess(true);
-      }
-      return(response)})
-    .then(data => { console.log('Image envoyée avec succès:', data);})
-    .catch(error => {
-      console.error('Erreur lors de l\'envoi de l\'image:', error);
-      setRequestSuccess(false);
-    });
-  }
-  
-  async function uploadImage(event){ //AJOUTER LA LOGIQUE DE CREATION DE cut et de end_coordinates et start_coordinates
+  async function uploadImage(event){ 
     event.preventDefault();
     const minPart =  Math.min(selectedTimeLineParts[0], selectedTimeLineParts[1]); 
     const maxPart =  Math.max(selectedTimeLineParts[0], selectedTimeLineParts[1]);    
@@ -117,27 +100,20 @@ const ImageForm = ({SelectedScreenIds, sendingScreensData, setSendingScreensData
       const formData = new FormData();
       formData.append('image', file);
       console.log("formData : ", formData)
-
-      axios.post("http://localhost:4800/uploadImgur",formData, {
-      // axios.post("https://mountain-big-basement.glitch.me/uploadImgur",formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-        onUploadProgress: (progressEvent) => {
-          const percentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          console.log(`Upload progress: ${percentage}%`);
-        },
-        })
+      await fetch('https://mountain-big-basement.glitch.me/uploadImgur', {
+      //await fetch('http://localhost:4800/uploadImgur', {
+        method: 'POST',
+        body: formData,
+      })
         .then(response => {
           console.log("response : ", response)
           if(response.status === 200){
             setRequestSuccess(true);
           }
-          return(response)})
+          return(response.json())})
         .then(async data => {
           console.log('Image envoyée avec succès:', data);
-          console.log("data.imgurLink : ", data.data.imgurLink);
-          const ImageSize = await getImageSizeFromUrl(data.data.imgurLink);
+          const ImageSize = await getImageSizeFromUrl(data.imgurLink);
           console.log("ImageSize : ", ImageSize)
           const cutCoordinates = generateCutCoordinates(ImageSize);
           setSendingScreensData(prevData => {
@@ -150,7 +126,7 @@ const ImageForm = ({SelectedScreenIds, sendingScreensData, setSendingScreensData
                     ...updatedData[j][i],
                     parameters: {
                             ...updatedData[j][i].parameters,
-                            image_url: data.data.imgurLink, 
+                            image_url: data.imgurLink, 
                             start_coordinates: {
                               x : cutCoordinates[i].start_coordinates.x,
                               y : cutCoordinates[i].start_coordinates.y},
@@ -202,8 +178,7 @@ const ImageForm = ({SelectedScreenIds, sendingScreensData, setSendingScreensData
           </div>
         )}
       </div>
-      <button id="uploadImage" onClick={(e) => {uploadImage(e)}} >Upload Image</button>
-      <button id="uploadImage" onClick={(e) => {pokeTest(e)}} >Poke Test</button>
+      <button id="uploadImage" onClick={(e) => uploadImage(e)} >Upload Image</button>
       {requestSuccessRender()}
     </div>
   );

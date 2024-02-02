@@ -4,6 +4,7 @@ import Screen from './component/screen';
 import Form from './component/form';
 import ImageForm from './component/ImageForm';  
 import TimeLinePart from './component/timeLinePart';
+import axios from 'axios';
 
 function App() {
   const [selectedTimeLineParts, setSelectedTimeLineParts] = useState([0,0]);
@@ -24,12 +25,14 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://raw.githubusercontent.com/MathisVermeren/Database_Mur_Image/main/content.json');
-        
-        if (!response.ok) {
+        // const response = await fetch('https://raw.githubusercontent.com/MathisVermeren/Database_Mur_Image/main/content.json');
+        //const response = await axios.get('http://localhost:4800/content');
+        const response = await axios.get('https://mountain-big-basement.glitch.me/content');
+        console.log("response: ", response);
+        if (response.status !== 200) {
           throw new Error('Erreur lors de la récupération des données.');
         }
-        const data = await response.json();
+        const data = response.data
         console.log("data: ", data);
         setSendingScreensData(data);
       } catch (error) {
