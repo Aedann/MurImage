@@ -1,22 +1,36 @@
+require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
-const fileUpload = require('express-fileupload');
 const mime = require('mime-types');
+const multer = require('multer')
+
 
 
 const app = express();
 const port = 4800;
 
+const storage = multer.diskStorage({
+  destination: './data', // Dossier de destination pour enregistrer l'image
+	filename: function (req, file, cb) {
+    cb(null, file.originalname); // Utilisez le nom original du fichier
+  },
+});
+
+const upload = multer({ storage: storage });
+
+
 app.use(cors());
 
-app.use(fileUpload());
 app.use(bodyParser.json());
 
-const imgurAccessToken = 'b81882edbe7fb55404a1bf9f59d39ac18113e1f9';
+//const imgurAccessToken = 'b81882edbe7fb55404a1bf9f59d39ac18113e1f9';
+const imgurAccessToken = process.env.imgurToken;
+console.log("imgurAccessToken : ",imgurAccessToken);
+
 
 app.get('/content', (req, res) => {
   try {
@@ -34,7 +48,7 @@ app.post('/content', (req, res) => {
   try {
     const filePath = path.join(__dirname, 'data', 'content.json');
     console.log(filePath);
-    const newData = req.body; // Le corps de la requête POST contient les nouvelles données
+    const newData = req.body.sendingScreensData; // Le corps de la requête POST contient les nouvelles données
 
     // Écriture des nouvelles données dans le fichier
     console.log(newData);
@@ -47,99 +61,37 @@ app.post('/content', (req, res) => {
   }
 });
 
-// app.post('/uploads', (req, res) => {
-//   console.log("req.files", req.files);
-//   console.log("req.body", req.body);
-//   if (!req.files || Object.keys(req.files).length === 0) {
-//     return res.status(400).json({ msg: 'No file were uploaded' });
-//   }
-
-//   const sampleFile = req.files.file;
-//   const uploadPath = path.join(__dirname, 'data', sampleFile.name);
-
-//   sampleFile.mv(uploadPath, function(err) {
-//     if (err) {
-//       return res.status(500).json({ msg: err.message });
-//     }
-//     res.json({ msg: 'File uploaded successfully' });
-//   });
-// });
-
-app.post("/uploadTest", async (req, res) => {
+app.post('/uploadImgur', upload.single('image'), async function (req, res, next) {
   console.log("poked ! ");   
   console.log("\n\n\n req : AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n",req);
-  console.log("req.files.length : ",Object.keys(req.files).length);
-  if (!req.files || Object.keys(req.files).length === 0) {
-    console.log("No file uploaded");
-    return res.status(400).json({ msg: 'No file were uploaded' });
-  }
-
   try {
+    const imagePath = `./data/${req.file.originalname}`;
+    const imageData = fs.readFileSync(imagePath);
 
-    const sampleFile = req.files.file;
-    console.log(sampleFile.name);
-    const uploadPath = path.join(__dirname, 'data', sampleFile.name);
+    const contentType = mime.lookup(imagePath) || 'application/octet-stream';
+    
+    const responseImgur = await axios.post('https://api.imgur.com/3/image', imageData, {
+      headers: {
+        'Authorization': `Bearer ${imgurAccessToken}`,
+        'Content-Type': contentType,
+        'Content-Length': imageData.length.toString(),
+      },
+    });
+ 
+    const imgurLink = responseImgur.data.data.link;
 
-    // Enregistrement de l'image sur le serveur Node.js
-    await sampleFile.mv(uploadPath);
-    try {
-      const imageData = fs.readFileSync(uploadPath);
-      const contentType = mime.lookup(uploadPath) || 'application/octet-stream';
-    } catch (error) {
-      console.error('Erreur lors de l\'upload de l\'image sur Imgur:', error.message);
-      res.status(500).json({ msg: error.message });
-    }
+    console.log('Réponse Imgur:', responseImgur);
+
+    // Suppression de l'image du serveur Node.js
+    fs.unlinkSync(imagePath);
+
+    res.json({ msg: 'File uploaded successfully', imgurLink });
+
   } catch (error) {
-    console.error('Erreur lors du traitement de l\'image:', error);
+    console.error('Erreur lors de l\'upload de l\'image sur Imgur:', error);
     res.status(500).json({ msg: error.message });
   }
-})
-
-
-
-app.post('/uploads', async (req, res) => {
-  if (!req.files || Object.keys(req.files).length === 0) {
-    return res.status(400).json({ msg: 'No file were uploaded' });
-  }
-
-  try {
-    const sampleFile = req.files.file;
-    const uploadPath = path.join(__dirname, 'data', sampleFile.name);
-
-    // Enregistrement de l'image sur le serveur Node.js
-    await sampleFile.mv(uploadPath);
-
-    try {
-      const imageData = fs.readFileSync(uploadPath);
-      const contentType = mime.lookup(uploadPath) || 'application/octet-stream';
-
-      const responseImgur = await axios.post('https://api.imgur.com/3/image', imageData, {
-        headers: {
-          'Authorization': `Bearer ${imgurAccessToken}`,
-          'Content-Type': contentType,
-          'Content-Length': imageData.length.toString(),
-        },
-      });
-
-      const imgurLink = responseImgur.data.data.link;
-
-      console.log('Réponse Imgur:', responseImgur);
-
-      // Suppression de l'image du serveur Node.js
-      fs.unlinkSync(uploadPath);
-
-      res.json({ msg: 'File uploaded successfully', imgurLink });
-    } catch (error) {
-      console.error('Erreur lors de l\'upload de l\'image sur Imgur:', error.message);
-      res.status(500).json({ msg: error.message });
-    }
-  } catch (error) {
-    console.error('Erreur lors du traitement de l\'image:', error);
-    res.status(500).json({ msg: error.message });
-  }
-});
-
-
+}); 
 
 app.listen(port, () => {
   console.log(`Serveur Node.js écoutant sur le port ${port}`);

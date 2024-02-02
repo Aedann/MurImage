@@ -3,6 +3,7 @@
 import React, {useState, useEffect} from 'react';
 import ImageForm from './ImageForm';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 import "./screen.css";
 
 //Print "conflicting" if there are mutliple types of screens in selectedScreens
@@ -129,14 +130,13 @@ const Form = ({sendingScreensData, setSendingScreensData, screens, selectedTimeL
 
     async function handleCommit(e){
         e.preventDefault();
-        await fetch('http://localhost:4800/content', {
-            method: 'POST',
-            body: sendingScreensData,
+        //await axios.post('https://mountain-big-basement.glitch.me/content ', {
+        await axios.post('http://localhost:4800/content ', {
+            "sendingScreensData" : sendingScreensData,
             headers: {
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => response.json())
         .then(data => {
           console.log('Ecran mis à jour avec succès : ', data);
         })
@@ -226,7 +226,7 @@ const Form = ({sendingScreensData, setSendingScreensData, screens, selectedTimeL
                     </label>)
                     )}
                 </div><br></br><br></br>
-                <button onSubmit={handleCommit}>Commit</button>
+                <button onClick={(e) => handleCommit(e)}>Commit</button>
             </form>
         </div>
     );

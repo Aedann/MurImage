@@ -13,15 +13,18 @@
     "axios": "^1.6.5",
     "cloudinary": "^1.41.2",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
     "express": "^4.18.2",
-    "express-fileupload": "^1.4.3",
     "fs": "^0.0.1-security",
-    "imgur": "^2.3.0",
+    "imgur": "^1.0.2",
     "mime-types": "^2.1.35",
+    "multer": "^1.4.5-lts.1",
     "nodemon": "^3.0.3",
     "path": "^0.12.7"
   },
   "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
     "tslib": "^2.6.2"
   }
 }
