@@ -27,7 +27,7 @@ flowchart
 
 Des clients tournent pour chaques écran. Ils sont codés en Godot.
 Un server local Node.JS est connecté aux clients via un websocket et à internet.
-Les données à afficher sont stockées soit sur le repo github sous data/content.json soit sur le serveur distant NodeJS : https://mountain-big-basement.glitch.me/content (hebergé sur glitch gratuitement, il faut le relancer toutes les 12h).
+Les données à afficher sont stockées soit sur le repo github sous data/content.json soit sur le serveur distant NodeJS : https://mountain-big-basement.glitch.me/content (hebergé sur glitch gratuitement, il faut attendre une dizaine de secondes pour qu'il se lance et reste allumé 12h).
 Le serveur traduit ensuite ce premier JSON en allant chercher les données à jour de chaque API d'internet (météo, images ...) et renvoie un JSON au client avec les informations à afficher.
 Voir par exemple [Meteo](type_database/Meteo.md).
 
