@@ -1,5 +1,5 @@
 # Architecture du projet : 
-[![Clicker pour accéder au site](./Website/Frontend.png])](https://aedann.github.io/MurImage)
+![https://aedann.github.io/MurImage/](./Website/Frontend.png)
 
 
 ```mermaid
